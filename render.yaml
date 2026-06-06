@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: FlowState
+    runtime: node
+    plan: free
+    region: virginia
+    branch: main
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: mkdir -p /tmp/db && export DATABASE_URL=file:/tmp/db/custom.db && npx prisma db push && node .next/standalone/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:/tmp/db/custom.db
+      - key: PORT
+        value: 10000
+      - key: HOSTNAME
+        value: 0.0.0.0
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        value: AIzaSyDyZD67svnT_tILcU-08c7jwLGLObbF9Wg
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        value: hoocar-8806f.firebaseapp.com
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        value: hoocar-8806f
+      - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+        value: hoocar-8806f.appspot.com
+      - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+        value: 70723011185
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        value: 1:70723011185:web:3ca361a6c9ea2d9eadd1d0
+      - key: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+        value: G-F37R1CB8CW
