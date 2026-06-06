@@ -26,3 +26,28 @@ Stage Summary:
 - All data persists via Prisma/SQLite
 - Responsive layout for desktop and mobile
 - 8 ambient sounds generated via Web Audio API
+
+---
+Task ID: 2
+Agent: Super Z (main)
+Task: Add landing page and Firebase authentication system
+
+Work Log:
+- Installed Firebase SDK v12.14.0
+- Created Firebase configuration with provided credentials (hoocar-8806f project)
+- Built auth-store with Zustand: signIn, signUp, signInWithGoogle, logout, resetPassword
+- Built LandingPage component with hero section, 6 feature cards, stats, CTA sections
+- Built AuthPage component with sign-in, sign-up, forgot password views
+- Added Google OAuth sign-in with popup
+- Integrated Firebase Auth error handling with user-friendly messages
+- Updated page.tsx with conditional rendering: landing → auth → app
+- Added user info display and logout button in app header
+- Fixed lint issues: derived appView from auth state instead of useEffect setState
+- Verified all flows with agent-browser: landing page, auth toggle, sign up form, navigation
+
+Stage Summary:
+- World-class landing page with animated hero, feature grid, stats, CTA
+- Full Firebase authentication with email/password and Google OAuth
+- Auth state management with auto-redirect when signed in
+- User profile display in app header with logout
+- All browser-verified and working correctly

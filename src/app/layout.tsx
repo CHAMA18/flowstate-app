@@ -16,10 +16,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "FlowState — Deep Focus Productivity",
-  description: "A world-class productivity app with Pomodoro timer, ambient focus sounds, and task management. Designed for deep work.",
-  keywords: ["productivity", "pomodoro", "focus", "timer", "ambient sounds", "task management", "deep work"],
+  description: "A beautifully crafted productivity app with Pomodoro timer, ambient focus sounds, and smart task management. Designed to help you enter your flow state and do the best work of your life.",
+  keywords: ["productivity", "pomodoro", "focus", "timer", "ambient sounds", "task management", "deep work", "flow state", "concentration"],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  },
+  openGraph: {
+    title: "FlowState — Deep Focus Productivity",
+    description: "Pomodoro timer, ambient sounds, and task management. Enter your flow state.",
+    type: "website",
   },
 };
 
