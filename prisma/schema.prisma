@@ -15,6 +15,12 @@ model Task {
   priority    String   @default("medium")
   pomodorosEstimated Int  @default(1)
   pomodorosCompleted Int  @default(0)
+  isRecurring Boolean  @default(false)
+  recurringFrequency String @default("none") // none, daily, weekly, monthly
+  recurringInterval   Int    @default(1)
+  recurringEndDate    String?
+  parentTaskId String?
+  meetingId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   completedAt DateTime?
@@ -39,4 +45,87 @@ model DailyStats {
   tasksCreated    Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model QuickCapture {
+  id        String   @id @default(cuid())
+  content   String
+  type      String   @default("thought") // thought, task, note, link
+  tags      String   @default("") // comma-separated
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        String
+  startTime   String?
+  endTime     String?
+  type        String   @default("task") // task, meeting, focus, reminder, personal
+  color       String   @default("oklch(0.78 0.16 65)")
+  linkedTaskId String?
+  recurring   String?  // JSON: { frequency, interval, endDate }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MeetingNote {
+  id          String   @id @default(cuid())
+  title       String
+  date        String
+  attendees   String   @default("") // comma-separated names
+  notes       String   @default("")
+  actionItems String   @default("") // JSON array of extracted tasks
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Contact {
+  id              String   @id @default(cuid())
+  name            String
+  email           String?
+  phone           String?
+  company         String?
+  role            String?
+  tags            String   @default("") // comma-separated
+  notes           String   @default("[]") // JSON array of { id, content, type, createdAt }
+  lastContactDate String?
+  followUpDate    String?
+  relationship    String   @default("prospect") // lead, prospect, client, partner, mentor, friend
+  warmth          Int      @default(3)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model WaitingItem {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  requestedFrom  String
+  requestedDate  String
+  expectedDate   String?
+  priority       String   @default("medium")
+  status         String   @default("waiting") // waiting, received, cancelled, reminded
+  remindDate     String?
+  linkedTaskId   String?
+  notes          String   @default("[]") // JSON array
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model ReflectionEntry {
+  id            String   @id @default(cuid())
+  date          String   @unique
+  wins          String   @default("[]") // JSON array
+  challenges    String   @default("[]")
+  learnings     String   @default("[]")
+  gratitude     String   @default("[]")
+  tomorrowPlan  String   @default("[]")
+  mood          Int      @default(3)
+  energyLevel   Int      @default(3)
+  focusScore    Int      @default(3)
+  notes         String?
+  completedAt   DateTime @default(now())
 }
