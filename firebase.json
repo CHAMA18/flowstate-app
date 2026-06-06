@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "source": "/",
+    "ignore": [
+      "node_modules",
+      ".next",
+      "firebase-debug.log",
+      "firestore-debug.log",
+      "ui-debug.log"
+    ],
+    "frameworksBackend": {
+      "region": "us-central1"
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

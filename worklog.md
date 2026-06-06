@@ -51,3 +51,28 @@ Stage Summary:
 - Auth state management with auto-redirect when signed in
 - User profile display in app header with logout
 - All browser-verified and working correctly
+
+---
+Task ID: 3
+Agent: Super Z (main)
+Task: Configure Firebase Hosting deployment
+
+Work Log:
+- Installed Firebase CLI v15.19.1 globally
+- Created firebase.json with Next.js SSR hosting configuration (frameworksBackend)
+- Created .firebaserc pointing to project hoocar-8806f
+- Created firestore.rules with authenticated user access policies
+- Verified Next.js build succeeds with standalone output (needed for Firebase SSR)
+- Created GitHub Actions workflow for automatic deployment on push to main
+- Created setup-firebase.sh one-command setup & deploy script
+- Created deploy.sh quick deploy script with --token support
+- Created DEPLOY.md comprehensive deployment guide
+- Updated .gitignore with Firebase artifacts
+- Could not deploy from sandbox (no interactive auth) — configured for user's local deployment
+
+Stage Summary:
+- Firebase Hosting fully configured for Next.js SSR deployment
+- Project builds successfully with `bun run build`
+- Three deployment methods configured: CLI, CI token, GitHub Actions
+- Deployment requires Firebase authentication (firebase login) from user's machine
+- App will be live at https://hoocar-8806f.web.app after deployment
