@@ -17,7 +17,6 @@ import { AuthPage } from '@/components/auth/auth-page'
 import { PomodoroTimer } from '@/components/productivity/pomodoro-timer'
 import { MusicPlayer } from '@/components/productivity/music-player'
 import { WorkTracker } from '@/components/productivity/work-tracker'
-import { StatsBar } from '@/components/productivity/stats-bar'
 import { DailyDashboard } from '@/components/productivity/daily-dashboard'
 import { QuickCapture } from '@/components/productivity/quick-capture'
 import { CalendarView } from '@/components/productivity/calendar-view'
@@ -30,16 +29,16 @@ import { DailyReflection } from '@/components/productivity/daily-reflection'
 import { SmartSearch } from '@/components/productivity/smart-search'
 import {
   Sun, Moon, Zap, Timer, Music, ListTodo, LogOut, User as UserIcon,
-  BarChart3, ChevronLeft, ChevronRight, Flame, Keyboard,
+  ChevronLeft, ChevronRight, Flame,
   LayoutDashboard, Lightbulb, Calendar, Target, FileText,
-  RefreshCw, Users, Hourglass, Search, Coffee, Brain,
+  RefreshCw, Users, Hourglass, Search,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type AppView = 'landing' | 'auth' | 'app'
 type ActivePanel =
   | 'dashboard' | 'capture' | 'timer' | 'focus' | 'music' | 'tasks'
-  | 'calendar' | 'meetings' | 'recurring' | 'crm' | 'waiting' | 'reflection' | 'stats'
+  | 'calendar' | 'meetings' | 'recurring' | 'crm' | 'waiting' | 'reflection'
 
 interface NavItem {
   id: ActivePanel
@@ -183,7 +182,6 @@ export default function Home() {
       case 'crm': return 'People CRM'
       case 'waiting': return 'Waiting For'
       case 'reflection': return 'Daily Reflection'
-      case 'stats': return 'Analytics'
     }
   }
 
@@ -203,13 +201,8 @@ export default function Home() {
         return <FocusSessions />
       case 'timer':
         return (
-          <div className="h-full flex flex-col lg:flex-row">
-            <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-8">
-              <PomodoroTimer />
-            </div>
-            <div className="hidden lg:block w-[340px] border-l border-border/20 p-5 overflow-y-auto">
-              <StatsBar />
-            </div>
+          <div className="h-full flex flex-col items-center justify-center p-6 lg:p-8">
+            <PomodoroTimer />
           </div>
         )
       case 'music':
@@ -274,12 +267,6 @@ export default function Home() {
             <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-5 border border-border/30">
               <DailyReflection />
             </div>
-          </div>
-        )
-      case 'stats':
-        return (
-          <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-            <StatsBar />
           </div>
         )
     }
@@ -481,23 +468,6 @@ export default function Home() {
                         <span className="text-[13px] font-medium">Search</span>
                         <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground/60">⌘K</span>
                       </motion.div>
-                    )}
-                  </AnimatePresence>
-                </button>
-
-                {/* Analytics button */}
-                <button
-                  onClick={() => setActivePanel('stats')}
-                  className={cn(
-                    'w-full flex items-center gap-3 rounded-xl transition-all duration-200',
-                    sidebarCollapsed ? 'justify-center px-0 py-2' : 'px-3 py-1.5',
-                    activePanel === 'stats' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  )}
-                >
-                  <BarChart3 className="w-[16px] h-[16px]" />
-                  <AnimatePresence>
-                    {!sidebarCollapsed && (
-                      <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} className="text-[13px] font-medium">Analytics</motion.span>
                     )}
                   </AnimatePresence>
                 </button>
