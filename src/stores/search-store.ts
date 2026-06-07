@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { firestoreSetPreferences, firestoreGetPreferences, isUserAuthenticated } from '@/lib/firestore-service'
 
 export interface SearchResult {
   id: string
@@ -30,6 +31,7 @@ interface SearchState {
     reflections: any[]
     waitingItems: any[]
   }) => void
+  loadRecentSearches: () => Promise<void>
 }
 
 export const useSearchStore = create<SearchState>((set, get) => ({
@@ -38,16 +40,34 @@ export const useSearchStore = create<SearchState>((set, get) => ({
   isOpen: false,
   isSearching: false,
   recentSearches: [],
+
   setQuery: (query) => set({ query }),
   setResults: (results) => set({ results }),
   setOpen: (isOpen) => set({ isOpen }),
   setSearching: (isSearching) => set({ isSearching }),
+
   addRecentSearch: (query) => {
     if (!query.trim()) return
     const recent = [query, ...get().recentSearches.filter(s => s !== query)].slice(0, 10)
     set({ recentSearches: recent })
+
+    // Save to Firestore
+    if (isUserAuthenticated()) {
+      firestoreSetPreferences('recentSearches', { queries: recent }).catch(err =>
+        console.error('[Search] Failed to save recent searches:', err)
+      )
+    }
   },
-  clearRecentSearches: () => set({ recentSearches: [] }),
+
+  clearRecentSearches: () => {
+    set({ recentSearches: [] })
+    if (isUserAuthenticated()) {
+      firestoreSetPreferences('recentSearches', { queries: [] }).catch(err =>
+        console.error('[Search] Failed to clear recent searches:', err)
+      )
+    }
+  },
+
   search: (query, stores) => {
     const q = query.toLowerCase().trim()
     if (!q) { set({ results: [], isSearching: false }); return }
@@ -55,7 +75,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
     set({ isSearching: true })
     const results: SearchResult[] = []
 
-    // Search tasks
     stores.tasks.forEach(t => {
       if (t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q)) {
         results.push({
@@ -66,7 +85,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       }
     })
 
-    // Search captures
     stores.captures.forEach(c => {
       if (c.content.toLowerCase().includes(q)) {
         results.push({
@@ -77,7 +95,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       }
     })
 
-    // Search events
     stores.events.forEach(e => {
       if (e.title.toLowerCase().includes(q) || (e.description || '').toLowerCase().includes(q)) {
         results.push({
@@ -88,7 +105,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       }
     })
 
-    // Search contacts
     stores.contacts.forEach(c => {
       if (c.name.toLowerCase().includes(q) || (c.company || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q)) {
         results.push({
@@ -99,7 +115,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       }
     })
 
-    // Search reflections
     stores.reflections.forEach(r => {
       const allText = [...r.wins, ...r.challenges, ...r.learnings, ...r.gratitude, r.notes || ''].join(' ').toLowerCase()
       if (allText.includes(q) || r.date.includes(q)) {
@@ -111,7 +126,6 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       }
     })
 
-    // Search waiting items
     stores.waitingItems.forEach(w => {
       if (w.title.toLowerCase().includes(q) || w.requestedFrom.toLowerCase().includes(q)) {
         results.push({
@@ -123,5 +137,17 @@ export const useSearchStore = create<SearchState>((set, get) => ({
     })
 
     set({ results, isSearching: false })
+  },
+
+  loadRecentSearches: async () => {
+    if (!isUserAuthenticated()) return
+    try {
+      const data = await firestoreGetPreferences<{ queries: string[] }>('recentSearches')
+      if (data?.queries) {
+        set({ recentSearches: data.queries })
+      }
+    } catch (error) {
+      console.error('[Search] Failed to load recent searches:', error)
+    }
   },
 }))

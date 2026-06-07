@@ -11,6 +11,7 @@ import { useQuickCaptureStore } from '@/stores/quick-capture-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useCRMStore } from '@/stores/crm-store'
 import { useReflectionStore } from '@/stores/reflection-store'
+import { useMusicStore } from '@/stores/music-store'
 import { useWaitingForStore } from '@/stores/waiting-for-store'
 import { LandingPage } from '@/components/landing/landing-page'
 import { AuthPage } from '@/components/auth/auth-page'
@@ -61,8 +62,15 @@ export default function Home() {
   const { resolvedTheme, setTheme } = useTheme()
   const mounted = useMounted()
   const { user, initialized, initialize, logout } = useAuthStore()
-  const { isRunning, mode, timeLeft, sessionsCompleted } = usePomodoroStore()
-  const { setOpen: setSearchOpen } = useSearchStore()
+  const { isRunning, mode, timeLeft, sessionsCompleted, loadSessions, loadSettings } = usePomodoroStore()
+  const { setOpen: setSearchOpen, loadRecentSearches } = useSearchStore()
+  const taskStore = useTaskStore()
+  const captureStore = useQuickCaptureStore()
+  const calendarStore = useCalendarStore()
+  const crmStore = useCRMStore()
+  const reflectionStore = useReflectionStore()
+  const waitingStore = useWaitingForStore()
+  const musicStore = useMusicStore()
   const [authViewed, setAuthViewed] = useState(false)
   const [activePanel, setActivePanel] = useState<ActivePanel>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -74,6 +82,31 @@ export default function Home() {
     const unsubscribe = initialize()
     return () => unsubscribe()
   }, [initialize])
+
+  // Initialize Firestore subscriptions when user authenticates
+  useEffect(() => {
+    if (!user) return
+
+    const unsubs: (() => void)[] = []
+
+    // Subscribe to all Firestore collections
+    unsubs.push(taskStore.initialize())
+    unsubs.push(captureStore.initialize())
+    unsubs.push(calendarStore.initialize())
+    unsubs.push(crmStore.initialize())
+    unsubs.push(reflectionStore.initialize())
+    unsubs.push(waitingStore.initialize())
+
+    // Load preferences
+    loadSessions()
+    loadSettings()
+    loadRecentSearches()
+    musicStore.loadPreferences()
+
+    return () => {
+      unsubs.forEach(unsub => unsub?.())
+    }
+  }, [user])
 
   useEffect(() => {
     if (!showUserMenu) return
@@ -127,6 +160,8 @@ export default function Home() {
   const handleBackToHome = () => setAuthViewed(false)
   const handleAuthSuccess = () => {}
   const handleLogout = async () => {
+    // Clean up Firestore subscriptions
+    if (taskStore.unsubscribe) taskStore.unsubscribe()
     await logout()
     setAuthViewed(false)
   }
